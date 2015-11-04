@@ -1,6 +1,7 @@
 package bookIndexFilter;
 
 import filter.AbstractFilter;
+import interfaces.IPullPipe;
 import interfaces.IPushPipe;
 import transferObject.LineWithLineNumber;
 import transferObject.WordArray;
@@ -20,10 +21,13 @@ public class LineToWordFilter extends AbstractFilter<LineWithLineNumber, WordArr
         super(output);
     }
 
+    public LineToWordFilter(IPullPipe<LineWithLineNumber> input) throws InvalidParameterException {
+        super(input);
+    }
 
     @Override
     public WordArray read() throws StreamCorruptedException {
-        return null;
+        return lineToWord(readInput());
     }
 
     @Override
@@ -31,24 +35,26 @@ public class LineToWordFilter extends AbstractFilter<LineWithLineNumber, WordArr
 
     }
 
+    //TODO Testausgabe löschen
+    //TODO ï»¿ diese Satzzeichen löschen und sonstige Satzzeichen (, . " @ etc.)
+
     @Override
     public void write(LineWithLineNumber value) throws StreamCorruptedException {
+        writeOutput(lineToWord(value));
+    }
 
+    private WordArray lineToWord(LineWithLineNumber value){
         WordArray wordArray = new WordArray();
         wordArray.setLineNumber(value.getLineNumber());
         wordArray.setEndOfSignal(value.isEndOfSignal());
 
-        String[] splitArray = value.getLine().split(" ");
+        String[] splitArray = value.getLine().trim().split(" ");
         for(String s : splitArray){
-            wordArray.addToWordArray(s);
+            if(!s.equals(" ") && !s.equals("\t")){
+                wordArray.addToWordArray(s);
+            }
         }
-
-        //TODO Testausgabe löschen
-        //TODO ï»¿ diese Satzzeichen löschen und sonstige Satzzeichen (, . " @ etc.)
-        //System.out.println(wordArray.getLineNumber());
-        //wordArray.getWordArray().forEach(System.out::println);
-
-        writeOutput(wordArray);
+        return wordArray;
     }
 
 }

@@ -1,18 +1,19 @@
 package transferObject;
 
-import java.util.ArrayList;
+
+import java.util.LinkedList;
 import java.util.List;
 
 /**
  * Created by Karin on 31.10.2015.
  */
 public class WordArray {
-    List<String> _wordArray ;
+    LinkedList<String> _wordArray ;
     int _lineNumber;
     boolean _endOfSignal;
 
     public WordArray(){
-        _wordArray = new ArrayList<>();
+        _wordArray = new LinkedList<>();
     }
 
     public void addToWordArray(String word){
@@ -23,7 +24,7 @@ public class WordArray {
         return _wordArray;
     }
 
-    public void setWordArray(List<String> _wordArray) {
+    public void setWordArray(LinkedList<String> _wordArray) {
         this._wordArray = _wordArray;
     }
 
@@ -41,5 +42,15 @@ public class WordArray {
 
     public void setEndOfSignal(boolean _endOfSignal) {
         this._endOfSignal = _endOfSignal;
+    }
+
+    @Override
+    public String toString() {
+        String temp = "";
+        for(String s : _wordArray){
+            temp += s + " ";
+        }
+        temp += _lineNumber;
+        return temp;
     }
 }

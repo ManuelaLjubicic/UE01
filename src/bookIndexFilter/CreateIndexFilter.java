@@ -1,6 +1,7 @@
 package bookIndexFilter;
 
 import filter.AbstractFilter;
+import interfaces.IPullPipe;
 import interfaces.IPushPipe;
 import transferObject.LineWithLineNumber;
 
@@ -21,9 +22,22 @@ public class CreateIndexFilter extends AbstractFilter<LineWithLineNumber, Linked
         super(output);
     }
 
+    public CreateIndexFilter(IPullPipe<LineWithLineNumber> input) throws InvalidParameterException {
+        super(input);
+    }
+
     @Override
     public LinkedList<String> read() throws StreamCorruptedException {
-        return null;
+
+        LineWithLineNumber lineNumber = readInput();
+
+        while(!lineNumber.isEndOfSignal()){
+             createIndex(lineNumber);
+             lineNumber = readInput();
+        }
+        createIndex(lineNumber);
+        return indexList;
+
     }
 
     @Override
@@ -34,19 +48,19 @@ public class CreateIndexFilter extends AbstractFilter<LineWithLineNumber, Linked
     @Override
     public void write(LineWithLineNumber value) throws StreamCorruptedException {
 
-       if(!value.isEndOfSignal()){
-           String indexEntry = value.getLine() + " " + value.getLineNumber();
+        if(createIndex(value)){
+            writeOutput(indexList);
+        }
+    }
 
-           Collections.sort(indexList, new SortIgnoreCase());
-       }else{
-
-           for(String s : indexList){
-               System.out.println(s);
-           }
-
-           writeOutput(indexList);
-       }
-
+    private boolean createIndex(LineWithLineNumber value){
+        if(!value.isEndOfSignal()){
+            indexList.add(value.getLine());
+            System.out.println(value.getLine());
+        }else{
+            Collections.sort(indexList, new SortIgnoreCase());
+        }
+        return value.isEndOfSignal();
     }
 
     public class SortIgnoreCase implements Comparator {
