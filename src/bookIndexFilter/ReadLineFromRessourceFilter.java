@@ -12,7 +12,7 @@ import java.security.InvalidParameterException;
 public class ReadLineFromRessourceFilter extends AbstractFilter<String, LineWithLineNumber> {
 
     FileReader _file;
-    int _lineNumber = 0;
+    int _lineNumber = 1;
 
     //TODO beim zweiten Filter müssten wir hier das WordArray als Output mitgeben!!!
     public ReadLineFromRessourceFilter(IPushPipe<LineWithLineNumber> output) throws InvalidParameterException {
@@ -42,12 +42,14 @@ public class ReadLineFromRessourceFilter extends AbstractFilter<String, LineWith
         BufferedReader br = new BufferedReader(_file);
         StringBuffer sb = new StringBuffer();
         String s;
-        LineWithLineNumber lineEntity;
+        LineWithLineNumber lineEntity = new LineWithLineNumber();
+        lineEntity.setEndOfSignal(false);
 
         int r;
         char c;
 
         try {
+
             while ((r = br.read()) != -1) {
 
                 while ((r != 10) && (r != 13)) {
@@ -60,18 +62,28 @@ public class ReadLineFromRessourceFilter extends AbstractFilter<String, LineWith
                         e.printStackTrace();
                     }
                 }
+                if(r != 13){
+                    _lineNumber++;
+                }
 
-                _lineNumber++;
                 s = sb.toString();
-                System.out.println(s);
+                //System.out.println(s);
                 if (!s.isEmpty()) {
-                    lineEntity = new LineWithLineNumber(s, _lineNumber);
+                    lineEntity.setLine(s);
+                    lineEntity.setLineNumber(_lineNumber);
+
                     //die Zeile wird an die Pipe "ReadLineFromRessourcePipe" übergeben
                     writeOutput(lineEntity);
                 }
                 sb.delete(0, sb.length());
 
             }
+
+            // end of File
+            if(r == -1){
+                lineEntity.setEndOfSignal(true);
+            }
+
         } catch (IOException e) {
             e.printStackTrace();
         }

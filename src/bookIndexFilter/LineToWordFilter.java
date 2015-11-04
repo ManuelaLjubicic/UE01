@@ -1,9 +1,7 @@
 package bookIndexFilter;
 
-import bookIndexPipe.LineInWordsPipe;
 import filter.AbstractFilter;
 import interfaces.IPushPipe;
-import interfaces.Writeable;
 import transferObject.LineWithLineNumber;
 import transferObject.WordArray;
 
@@ -16,6 +14,7 @@ import java.security.InvalidParameterException;
 
 //TODO Datentyp Object muss noch durch das Array das weiter geschickt wird ausgetauscht werden
 public class LineToWordFilter extends AbstractFilter<LineWithLineNumber, WordArray>{
+
 
     public LineToWordFilter(IPushPipe<WordArray> output) throws InvalidParameterException {
         super(output);
@@ -34,7 +33,22 @@ public class LineToWordFilter extends AbstractFilter<LineWithLineNumber, WordArr
 
     @Override
     public void write(LineWithLineNumber value) throws StreamCorruptedException {
-        // TODO implement methods for dividing the Line in words and building an ArrayList of Words
+
+        WordArray wordArray = new WordArray();
+        wordArray.setLineNumber(value.getLineNumber());
+        wordArray.setEndOfSignal(value.isEndOfSignal());
+
+        String[] splitArray = value.getLine().split(" ");
+        for(String s : splitArray){
+            wordArray.addToWordArray(s);
+        }
+
+        //TODO Testausgabe löschen
+        //TODO ï»¿ diese Satzzeichen löschen und sonstige Satzzeichen (, . " @ etc.)
+        //System.out.println(wordArray.getLineNumber());
+        //wordArray.getWordArray().forEach(System.out::println);
+
+        writeOutput(wordArray);
     }
 
 }

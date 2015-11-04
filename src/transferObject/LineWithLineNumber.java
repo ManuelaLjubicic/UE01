@@ -7,13 +7,14 @@ import interfaces.Writeable;
  */
 public class LineWithLineNumber {
 
-    String _line;
-    int _lineNumber;
+    private String _line;
+    private int _lineNumber;
+    private boolean _endOfSignal;
 
-    public LineWithLineNumber(String line, int lineNumber){
-        _line = line;
-        _lineNumber = lineNumber;
-    }
+//    public LineWithLineNumber(String line, int lineNumber){
+//        _line = line;
+//        _lineNumber = lineNumber;
+//    }
 
     public String getLine() {
         return _line;
@@ -29,5 +30,13 @@ public class LineWithLineNumber {
 
     public void setLineNumber(int _lineNumber) {
         this._lineNumber = _lineNumber;
+    }
+
+    public boolean isEndOfSignal() {
+        return _endOfSignal;
+    }
+
+    public void setEndOfSignal(boolean endOfSignal) {
+        this._endOfSignal = endOfSignal;
     }
 }
