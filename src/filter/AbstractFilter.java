@@ -11,7 +11,8 @@ public abstract class AbstractFilter<in, out> implements IOable<in, out>, Runnab
     
     public static Object ENDING_SIGNAL = null;
     
-    
+    public AbstractFilter(){}
+
     public AbstractFilter(IPullPipe<in> input) throws InvalidParameterException{
         if (input == null){
             throw new InvalidParameterException("input can't be null!");

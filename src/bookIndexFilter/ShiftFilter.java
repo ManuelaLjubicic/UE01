@@ -1,6 +1,7 @@
 package bookIndexFilter;
 
 import filter.AbstractFilter;
+import interfaces.IPullPipe;
 import interfaces.IPushPipe;
 import transferObject.LineWithLineNumber;
 import transferObject.WordArray;
@@ -17,9 +18,14 @@ public class ShiftFilter extends AbstractFilter<WordArray, LineWithLineNumber>{
         super(output);
     }
 
+    public ShiftFilter(IPullPipe<WordArray> input) throws InvalidParameterException {
+        super(input);
+    }
+
     @Override
     public LineWithLineNumber read() throws StreamCorruptedException {
-        return null;
+
+        return shift(readInput());
     }
 
     @Override
@@ -30,38 +36,25 @@ public class ShiftFilter extends AbstractFilter<WordArray, LineWithLineNumber>{
     @Override
     public void write(WordArray value) throws StreamCorruptedException {
 
-        String line = "";
-        int startIndex = 0;
-        int arrayLength = value.getWordArray().size();
-        int endIndex = arrayLength - 1;
-        int currentIndex = 0;
+        writeOutput(shift(value));
 
-        while(startIndex < arrayLength){
-            currentIndex = startIndex;
+    }
 
-            while(currentIndex != endIndex){
-                line = line + value.getWordArray().get(currentIndex) + " ";
-                currentIndex++;
-                if(currentIndex > (arrayLength-1)){
-                    currentIndex = 0;
-                }
+    private LineWithLineNumber shift(WordArray value) {
+        LineWithLineNumber lineWithLineNumber = new LineWithLineNumber();
+
+        if(!value.isEndOfSignal()){
+            int arrayLength = value.getWordArray().size();
+
+            for(int i = 0; i < arrayLength; i++){
+                value.getWordArray().add(value.getWordArray().remove(0));
+                ;
+                lineWithLineNumber.setLine(value.toString());
+                lineWithLineNumber.setEndOfSignal(value.isEndOfSignal());
             }
-
-            LineWithLineNumber lineWithLineNumber = new LineWithLineNumber();
-            lineWithLineNumber.setEndOfSignal(value.isEndOfSignal());
-            lineWithLineNumber.setLineNumber(value.getLineNumber());
-            lineWithLineNumber.setLine(line);
-//            System.out.println(lineWithLineNumber.getLineNumber());
-//            System.out.println(lineWithLineNumber.getLine());
-            writeOutput(lineWithLineNumber);
-
-            line = "";
-
-            startIndex++;
-            endIndex++;
-            if(endIndex > arrayLength - 1){
-                endIndex = 0;
-            }
+        }else{
+            lineWithLineNumber.setEndOfSignal(true);
         }
+        return lineWithLineNumber;
     }
 }

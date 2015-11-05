@@ -3,26 +3,34 @@ package bookIndexFilter;
 import filter.AbstractFilter;
 import interfaces.*;
 import transferObject.LineWithLineNumber;
+
 import java.io.*;
 import java.security.InvalidParameterException;
+import java.util.LinkedList;
 
 /**
  * Created by manue on 31.10.2015.
  */
-public class ReadLineFromRessourceFilter extends AbstractFilter<String, LineWithLineNumber> {
+public class ReadLineFromRessourceSource extends AbstractFilter<String, LineWithLineNumber> {
 
-    FileReader _file;
-    int _lineNumber = 1;
+    private FileReader _file;
+    private int _lineNumber = 1;
+    private String _filePath;
+    private LinkedList<LineWithLineNumber> lines;
 
     //TODO beim zweiten Filter müssten wir hier das WordArray als Output mitgeben!!!
-    public ReadLineFromRessourceFilter(IPushPipe<LineWithLineNumber> output) throws InvalidParameterException {
+    public ReadLineFromRessourceSource(IPushPipe<LineWithLineNumber> output) throws InvalidParameterException {
         super(output);
     }
 
+    public ReadLineFromRessourceSource(String filePath) throws InvalidParameterException {
+        this._filePath = filePath;
+        readLines();
+    }
 
     @Override
     public LineWithLineNumber read() throws StreamCorruptedException {
-        return null;
+        return lines.remove(0);
     }
 
     @Override
@@ -31,9 +39,18 @@ public class ReadLineFromRessourceFilter extends AbstractFilter<String, LineWith
 
     @Override
     public void write(String filePath) throws StreamCorruptedException {
+        _filePath = filePath;
+        readLines();
+        for (LineWithLineNumber l : lines) {
+            writeOutput(l);
+        }
+    }
 
+
+    private void readLines() {
+        lines = new LinkedList<>();
         try {
-            _file = new FileReader(filePath);
+            _file = new FileReader(_filePath);
         } catch (FileNotFoundException e) {
             System.out.println("File doesn't exist.");
             e.printStackTrace();
@@ -47,46 +64,48 @@ public class ReadLineFromRessourceFilter extends AbstractFilter<String, LineWith
 
         int r;
         char c;
-
         try {
-
             while ((r = br.read()) != -1) {
-
                 while ((r != 10) && (r != 13)) {
+
                     try {
                         c = (char) r;
                         sb.append(c);
-
                         r = br.read();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                 }
-                if(r != 13){
+
+                if (r != 13) {
                     _lineNumber++;
                 }
-
                 s = sb.toString();
-                //System.out.println(s);
+
                 if (!s.isEmpty()) {
+                    lineEntity = new LineWithLineNumber();
                     lineEntity.setLine(s);
                     lineEntity.setLineNumber(_lineNumber);
-
-                    //die Zeile wird an die Pipe "ReadLineFromRessourcePipe" übergeben
-                    writeOutput(lineEntity);
+                    lines.add(lineEntity);
                 }
                 sb.delete(0, sb.length());
-
             }
 
-            // end of File
-            if(r == -1){
+            if (r == -1) {
+                lineEntity = new LineWithLineNumber();
                 lineEntity.setEndOfSignal(true);
+                lineEntity.setLine("");
+                lines.add(lineEntity);
             }
 
         } catch (IOException e) {
             e.printStackTrace();
         }
+        System.out.println(lineEntity.getLine());
 
     }
+
 }
+
+
+
