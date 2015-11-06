@@ -56,5 +56,4 @@ public class LineToWordFilter extends AbstractFilter<LineWithLineNumber, WordArr
         }
         return wordArray;
     }
-
 }

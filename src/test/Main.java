@@ -88,7 +88,16 @@ public class Main {
         PushPipe<WordTransfer> pipe2 = new PushPipe<>();
         CharToWordFilter filter2 = new CharToWordFilter(pipe2);
 
-//
+        PushPipe<LineWithLineNumber> pipe3 = new PushPipe<>();
+        WordToLineFilter filter3 = new WordToLineFilter(pipe3);
+
+        PushPipe<LinkedList<String>> pipe4 = new PushPipe<>();
+        LineToListFilter filter4 = new LineToListFilter(pipe4);
+
+//        PushPipe<LinkedList<String>> pipe5 = new PushPipe<>();
+//        PrintSink filter5 = new PrintSink("testPush_B");
+
+
 //        PushPipe<LineWithLineNumber> pipe3 = new PushPipe<>();
 //        ShiftFilter filter3 = new ShiftFilter(pipe3);
 //
@@ -99,9 +108,9 @@ public class Main {
 //        PrintSink filter5 = new PrintSink("testPush.txt");
 //
           pipe1.setSuccessorFilter(filter2);
-//        pipe2.setSuccessorFilter(filter3);
-//        pipe3.setSuccessorFilter(filter4);
-//        pipe4.setSuccessorFilter(filter5);
+          pipe2.setSuccessorFilter(filter3);
+          pipe3.setSuccessorFilter(filter4);
+//          pipe4.setSuccessorFilter(filter5);
 
 
         try {
@@ -111,3 +120,10 @@ public class Main {
         }
     }
 }
+
+
+//TODO unwichtige Wörter aussortieren (HashMap?)
+//TODO im LineToWordFilter die Satzzeichen (Sonderzeichen) entfernen
+//TODO linksbündig, rechtsbündig, zentriert (ZEilenlänge im Mein mitgeben!!!)
+//TODO pull seite
+//TODO sysouts nervige kommentare und unnötige packete und klassen raus schmeißen

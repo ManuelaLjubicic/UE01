@@ -73,6 +73,7 @@ public class CharacterSource extends AbstractFilter<String, CharTransfer> {
 
                     try {
                         c = (char) r;
+                        charTransfer = new CharTransfer();
                         charTransfer.setC(c);
                         charTransfer.setLineLength(_lineLength);
                         _chars.add(charTransfer);

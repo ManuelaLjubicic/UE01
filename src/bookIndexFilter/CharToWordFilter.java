@@ -16,14 +16,20 @@ import java.security.InvalidParameterException;
  */
 public class CharToWordFilter extends AbstractFilter<CharTransfer, WordTransfer> {
 
-    private String _word = "";
+    private String _word;
+    private boolean _endOfWord;
+    private WordTransfer _wordTransfer = new WordTransfer();
 
     public CharToWordFilter(IPushPipe<WordTransfer> output) throws InvalidParameterException {
         super(output);
+        _word = "";
+        _endOfWord = false;
     }
 
     public CharToWordFilter(IPullPipe<CharTransfer> input) throws InvalidParameterException {
         super(input);
+        _word = "";
+        _endOfWord = false;
     }
 
     @Override
@@ -39,26 +45,25 @@ public class CharToWordFilter extends AbstractFilter<CharTransfer, WordTransfer>
     @Override
     public void write(CharTransfer value) throws StreamCorruptedException {
 
-        writeOutput(charToWord(value));
+        if(charToWord(value)){
+            _wordTransfer = new WordTransfer();
+            _wordTransfer.setWord(_word + " ");
+            _word = "";
+            _wordTransfer.setLineLength(value.getLineLength());
+            _wordTransfer.setIsEndOfSignal(value.isIsEndOfSignal());
+            writeOutput(_wordTransfer);
+        }
     }
 
-    private WordTransfer charToWord(CharTransfer value){
+    private boolean charToWord(CharTransfer value){
 
         WordTransfer wordTransfer = new WordTransfer();
-        System.out.println(value.get_c());
 
         if((value.get_c() != ' ')){
-            System.out.println(value.get_c());
             _word = _word + value.get_c();
         }else{
-
-            wordTransfer.setIsEndOfSignal(value.isIsEndOfSignal());
-            wordTransfer.setWord(_word);
-            wordTransfer.setLineLength(value.getLineLength());
-
-            _word = "";
-            return wordTransfer;
+            return true;
         }
-        return null;
+        return false;
     }
 }

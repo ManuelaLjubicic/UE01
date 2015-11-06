@@ -16,7 +16,7 @@ import java.util.LinkedList;
  */
 public class CreateIndexFilter extends AbstractFilter<LineWithLineNumber, LinkedList<String>> {
 
-    private LinkedList<String> indexList = new LinkedList<>();
+    private LinkedList<String> _indexList = new LinkedList<>();
 
     public CreateIndexFilter(IPushPipe<LinkedList<String>> output) throws InvalidParameterException {
         super(output);
@@ -36,7 +36,7 @@ public class CreateIndexFilter extends AbstractFilter<LineWithLineNumber, Linked
              lineNumber = readInput();
         }
         createIndex(lineNumber);
-        return indexList;
+        return _indexList;
 
     }
 
@@ -49,16 +49,16 @@ public class CreateIndexFilter extends AbstractFilter<LineWithLineNumber, Linked
     public void write(LineWithLineNumber value) throws StreamCorruptedException {
 
         if(createIndex(value)){
-            writeOutput(indexList);
+            writeOutput(_indexList);
         }
     }
 
     private boolean createIndex(LineWithLineNumber value){
         if(!value.isEndOfSignal()){
-            indexList.add(value.getLine());
+            _indexList.add(value.getLine());
             System.out.println(value.getLine());
         }else{
-            Collections.sort(indexList, new SortIgnoreCase());
+            Collections.sort(_indexList, new SortIgnoreCase());
         }
         return value.isEndOfSignal();
     }
