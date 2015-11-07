@@ -56,7 +56,6 @@ public class CreateIndexFilter extends AbstractFilter<LineWithLineNumber, Linked
     private boolean createIndex(LineWithLineNumber value){
         if(!value.isEndOfSignal()){
             _indexList.add(value.getLine());
-            System.out.println(value.getLine());
         }else{
             Collections.sort(_indexList, new SortIgnoreCase());
         }

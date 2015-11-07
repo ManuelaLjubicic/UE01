@@ -1,5 +1,6 @@
 package bookIndexFilter;
 
+import align.Alignment;
 import filter.AbstractFilter;
 import interfaces.IPullPipe;
 import interfaces.IPushPipe;
@@ -14,23 +15,44 @@ import java.security.InvalidParameterException;
  */
 public class WordToLineFilter extends AbstractFilter<WordTransfer, LineWithLineNumber> {
 
+    private LineWithLineNumber _lineWithLineNumber;
+    private boolean _isEndOfLine;
     private StringBuffer _sb;
     private int _lineNumber;
+    private int _lineLength;
+    final int _MIN_LINE_LENGTH = 60;
+    Alignment _align;
 
-    public WordToLineFilter(IPushPipe<LineWithLineNumber> output) throws InvalidParameterException {
+    public WordToLineFilter(IPushPipe<LineWithLineNumber> output, int lineLength, Alignment align) throws InvalidParameterException {
         super(output);
-        _sb = new StringBuffer();
+        init(lineLength, align);
     }
 
-    public WordToLineFilter(IPullPipe<WordTransfer> input) throws InvalidParameterException {
+    public WordToLineFilter(IPullPipe<WordTransfer> input, int lineLength, Alignment align) throws InvalidParameterException {
         super(input);
-        _sb = new StringBuffer();
+        init(lineLength, align);
     }
 
+    private void init(int lineLength, Alignment align){
+        _sb = new StringBuffer();
+        _lineWithLineNumber = new LineWithLineNumber();
+        _isEndOfLine = false;
+        _lineLength = lineLength;
+        _align = align;
+        if (_lineLength < _MIN_LINE_LENGTH) {
+            _lineLength = _MIN_LINE_LENGTH;
+        }
+    }
 
     @Override
     public LineWithLineNumber read() throws StreamCorruptedException {
-        return null;
+
+        WordTransfer wordTransfer = readInput();
+
+        while(!wordToLine(wordTransfer) && (!wordTransfer.getIsEndOfSignal())){
+            wordTransfer = readInput();
+        }
+        return _lineWithLineNumber;
     }
 
     @Override
@@ -41,54 +63,50 @@ public class WordToLineFilter extends AbstractFilter<WordTransfer, LineWithLineN
     @Override
     public void write(WordTransfer value) throws StreamCorruptedException {
 
-        LineWithLineNumber lineWithLineNumber = wordToLine(value);
-        if(lineWithLineNumber != null){
-            writeOutput(wordToLine(value));
+        if(wordToLine(value)){
+            writeOutput(_lineWithLineNumber);
         }
     }
 
 
-    private LineWithLineNumber wordToLine(WordTransfer value){
+    private boolean wordToLine(WordTransfer value) {
 
-        LineWithLineNumber lineWithlineNumber;
-
-        if (value.getWord().length() < value.getLineLength()){
-            if((_sb.length() + value.getWord().length()) < value.getLineLength()){
-                _sb.append(value.getWord());
-            }else{
-                lineWithlineNumber = new LineWithLineNumber();
-                _lineNumber++;
-                lineWithlineNumber.setLine(_sb.toString());
-                lineWithlineNumber.setLineNumber(_lineNumber);
-                lineWithlineNumber.setEndOfSignal(value.getIsEndOfSignal());
-
-                _sb = new StringBuffer();
-                _sb.append(value.getWord());
-                System.out.println(lineWithlineNumber.getLine());
-                return lineWithlineNumber;
-            }
-
-
-        }else{
-            //TODO Wort spliten od. Fehlermeldung
-
-            int i = 0;
-            int j = value.getLineLength()-1;
-            while((value.getWord().length()-j) > value.getLineLength()){
-                _sb = new StringBuffer();
-                _sb.append(value.getWord().substring(i, j));
-                i = i + value.getLineLength();
-                j = j + value.getLineLength();
-
-                lineWithlineNumber = new LineWithLineNumber();
-                _lineNumber++;
-                lineWithlineNumber.setLine(_sb.toString());
-                lineWithlineNumber.setLineNumber(_lineNumber);
-                lineWithlineNumber.setEndOfSignal(value.getIsEndOfSignal());
-                return lineWithlineNumber;
-            }
-
+        if(value.getIsEndOfSignal()){
+            setTransferObject(value);
+            return true;
         }
-        return lineWithlineNumber;
+
+        if ((_sb.length() + value.getWord().length() < _lineLength)) {
+            _sb.append(value.getWord());
+        } else {
+            setTransferObject(value);
+            return true;
+        }
+        return false;
+    }
+
+    private void setTransferObject(WordTransfer value){
+
+        String line = _sb.toString();
+        int spaceValue = _lineLength - line.length();
+
+        if(_align == Alignment.CENTER){
+            spaceValue = spaceValue / 2;
+            for(int i = 0; i <= spaceValue; i++){
+                line = " " + line;
+            }
+        }else if(_align == Alignment.RIGHT){
+            for(int i = 0; i <= spaceValue; i++){
+                line = " " + line;
+            }
+        }
+
+        _lineNumber++;
+        _lineWithLineNumber = new LineWithLineNumber();
+        _lineWithLineNumber.setLine(line);
+        _lineWithLineNumber.setLineNumber(_lineNumber);
+        _lineWithLineNumber.setEndOfSignal(value.getIsEndOfSignal());
+        _sb = new StringBuffer();
+        _sb.append(value.getWord());
     }
 }

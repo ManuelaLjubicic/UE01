@@ -31,7 +31,13 @@ public class LineToListFilter extends AbstractFilter<LineWithLineNumber, LinkedL
 
     @Override
     public LinkedList<String> read() throws StreamCorruptedException {
-        return null;
+
+        LineWithLineNumber lineWithLineNumber = readInput();
+
+        while(!lineToList(lineWithLineNumber)&&(!lineWithLineNumber.isEndOfSignal())){
+            lineWithLineNumber = readInput();
+        }
+        return _lines;
     }
 
     @Override
@@ -50,7 +56,6 @@ public class LineToListFilter extends AbstractFilter<LineWithLineNumber, LinkedL
 
         if(!value.isEndOfSignal()){
             _lines.add(value.getLine());
-            System.out.println(_lines.getLast());
         }
         return value.isEndOfSignal();
     }

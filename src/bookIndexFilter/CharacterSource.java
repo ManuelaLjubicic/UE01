@@ -17,23 +17,20 @@ public class CharacterSource extends AbstractFilter<String, CharTransfer> {
     private String _filePath;
     private FileReader _file;
     private LinkedList<CharTransfer> _chars;
-    private int _lineLength;
 
-    public CharacterSource(IPushPipe<CharTransfer> output, int lineLength) throws InvalidParameterException {
+    public CharacterSource(IPushPipe<CharTransfer> output) throws InvalidParameterException {
         super(output);
-        _lineLength = lineLength;
     }
 
-    public CharacterSource(String filePath, int lineLength) throws InvalidParameterException {
+    public CharacterSource(String filePath) throws InvalidParameterException {
         this._filePath = filePath;
-        this._lineLength = lineLength;
         readCharacter();
     }
 
 
     @Override
     public CharTransfer read() throws StreamCorruptedException {
-        return null;
+        return _chars.remove(0);
     }
 
     @Override
@@ -75,9 +72,7 @@ public class CharacterSource extends AbstractFilter<String, CharTransfer> {
                         c = (char) r;
                         charTransfer = new CharTransfer();
                         charTransfer.setC(c);
-                        charTransfer.setLineLength(_lineLength);
                         _chars.add(charTransfer);
-                       //System.out.print(charTransfer.get_c());
 
                         r = br.read();
                     } catch (IOException e) {
@@ -89,7 +84,6 @@ public class CharacterSource extends AbstractFilter<String, CharTransfer> {
             if (r == -1) {
                 charTransfer = new CharTransfer();
                 charTransfer.setIsEndOfSignal(true);
-                charTransfer.setLineLength(_lineLength);
                 _chars.add(charTransfer);
             }
 

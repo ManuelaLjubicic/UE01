@@ -16,7 +16,7 @@ public class ReadLineFromRessourceSource extends AbstractFilter<String, LineWith
     private FileReader _file;
     private int _lineNumber = 1;
     private String _filePath;
-    private LinkedList<LineWithLineNumber> lines;
+    private LinkedList<LineWithLineNumber> _lines;
 
     //TODO beim zweiten Filter müssten wir hier das WordArray als Output mitgeben!!!
     public ReadLineFromRessourceSource(IPushPipe<LineWithLineNumber> output) throws InvalidParameterException {
@@ -30,7 +30,7 @@ public class ReadLineFromRessourceSource extends AbstractFilter<String, LineWith
 
     @Override
     public LineWithLineNumber read() throws StreamCorruptedException {
-        return lines.remove(0);
+        return _lines.remove(0);
     }
 
     @Override
@@ -41,14 +41,14 @@ public class ReadLineFromRessourceSource extends AbstractFilter<String, LineWith
     public void write(String filePath) throws StreamCorruptedException {
         _filePath = filePath;
         readLines();
-        for (LineWithLineNumber l : lines) {
+        for (LineWithLineNumber l : _lines) {
             writeOutput(l);
         }
     }
 
 
     private void readLines() {
-        lines = new LinkedList<>();
+        _lines = new LinkedList<>();
         try {
             _file = new FileReader(_filePath);
         } catch (FileNotFoundException e) {
@@ -86,7 +86,7 @@ public class ReadLineFromRessourceSource extends AbstractFilter<String, LineWith
                     lineEntity = new LineWithLineNumber();
                     lineEntity.setLine(s);
                     lineEntity.setLineNumber(_lineNumber);
-                    lines.add(lineEntity);
+                    _lines.add(lineEntity);
                 }
                 sb.delete(0, sb.length());
             }
@@ -95,14 +95,12 @@ public class ReadLineFromRessourceSource extends AbstractFilter<String, LineWith
                 lineEntity = new LineWithLineNumber();
                 lineEntity.setEndOfSignal(true);
                 lineEntity.setLine("");
-                lines.add(lineEntity);
+                _lines.add(lineEntity);
             }
 
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println(lineEntity.getLine());
-
     }
 
 }

@@ -5,7 +5,6 @@ package transferObject;
  */
 public class CharTransfer {
     private char _c;
-    private int _lineLength;
     private boolean _isEndOfSignal;
 
     public char get_c() {
@@ -16,15 +15,7 @@ public class CharTransfer {
         this._c = _c;
     }
 
-    public int getLineLength() {
-        return _lineLength;
-    }
-
-    public void setLineLength(int _lineLength) {
-        this._lineLength = _lineLength;
-    }
-
-    public boolean isIsEndOfSignal() {
+    public boolean isEndOfSignal() {
         return _isEndOfSignal;
     }
 
