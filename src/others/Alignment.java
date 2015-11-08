@@ -1,4 +1,4 @@
-package align;
+package others;
 
 /**
  * Created by manue on 07.11.2015.

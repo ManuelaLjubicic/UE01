@@ -55,7 +55,10 @@ public class CreateIndexFilter extends AbstractFilter<LineWithLineNumber, Linked
 
     private boolean createIndex(LineWithLineNumber value){
         if(!value.isEndOfSignal()){
-            _indexList.add(value.getLine());
+            if(value.getLine() != null){
+                _indexList.add(value.getLine());
+            }
+
         }else{
             Collections.sort(_indexList, new SortIgnoreCase());
         }
@@ -68,7 +71,12 @@ public class CreateIndexFilter extends AbstractFilter<LineWithLineNumber, Linked
         public int compare(Object o1, Object o2) {
             String s1 = (String) o1;
             String s2 = (String)o2;
-
+            if(s1 == null){
+                return -1;
+            }
+            if(s2 == null){
+                return 1;
+            }
             return s1.toLowerCase().compareTo((s2.toLowerCase()));
         }
     }

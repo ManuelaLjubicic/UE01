@@ -1,6 +1,6 @@
 package bookIndexFilter;
 
-import align.Alignment;
+import others.Alignment;
 import filter.AbstractFilter;
 import interfaces.IPullPipe;
 import interfaces.IPushPipe;

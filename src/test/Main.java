@@ -1,6 +1,6 @@
 package test;
 
-import align.Alignment;
+import others.Alignment;
 import bookIndexFilter.*;
 import bookIndexPipe.PullPipe;
 import bookIndexPipe.PushPipe;
@@ -31,10 +31,12 @@ public class Main {
                 inputPath = "\\" + args[1];
                 outputPath = args[2];
 
-                if(args[0].equals("puslA")){
+                if(args[0].equals("pullA")){
                     pullPipelineA();
+                    System.out.println("pullA output was successful!");
                 }else{
                     pushPipelineA();
+                    System.out.println("pushA output was successful!");
                 }
 
             }else{
@@ -54,12 +56,16 @@ public class Main {
 
                 if(args[0].equals("pullB")){
                     pullPipelineB();
+                    System.out.println("pullB output was successful!");
                 }else if(args[0].equals("pushB")){
                     pushPipelineB();
+                    System.out.println("pushB output was successful!");
                 }else if(args[0].equals("pullAandB")){
                     pullPipelineAandB();
+                    System.out.println("pullAandB output was successful!");
                 }else{
                     pushPipelineAandB();
+                    System.out.println("pushAandB output was successful!");
                 }
             }
         }else{

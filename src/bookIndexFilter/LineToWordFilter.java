@@ -3,6 +3,7 @@ package bookIndexFilter;
 import filter.AbstractFilter;
 import interfaces.IPullPipe;
 import interfaces.IPushPipe;
+import others.UselessWord;
 import transferObject.LineWithLineNumber;
 import transferObject.WordArray;
 
@@ -13,7 +14,7 @@ import java.security.InvalidParameterException;
  * Created by Karin on 31.10.2015.
  */
 
-//TODO Datentyp Object muss noch durch das Array das weiter geschickt wird ausgetauscht werden
+
 public class LineToWordFilter extends AbstractFilter<LineWithLineNumber, WordArray>{
 
 
@@ -35,9 +36,6 @@ public class LineToWordFilter extends AbstractFilter<LineWithLineNumber, WordArr
 
     }
 
-    //TODO Testausgabe löschen
-    //TODO ï»¿ diese Satzzeichen löschen und sonstige Satzzeichen (, . " @ etc.)
-
     @Override
     public void write(LineWithLineNumber value) throws StreamCorruptedException {
         writeOutput(lineToWord(value));
@@ -50,8 +48,10 @@ public class LineToWordFilter extends AbstractFilter<LineWithLineNumber, WordArr
 
         String[] splitArray = value.getLine().trim().split(" ");
         for(String s : splitArray){
-            if(!s.equals(" ") && !s.equals("\t")){
-                wordArray.addToWordArray(s);
+            if(!UselessWord.getUselessWords().contains(s.toLowerCase())){
+                if(!s.equals(" ") && !s.equals("\t")) {
+                    wordArray.addToWordArray(s);
+                }
             }
         }
         return wordArray;
