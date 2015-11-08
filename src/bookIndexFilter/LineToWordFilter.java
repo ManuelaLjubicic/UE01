@@ -46,12 +46,10 @@ public class LineToWordFilter extends AbstractFilter<LineWithLineNumber, WordArr
         wordArray.setLineNumber(value.getLineNumber());
         wordArray.setEndOfSignal(value.isEndOfSignal());
 
-        String[] splitArray = value.getLine().trim().split(" ");
+        String[] splitArray = value.getLine().trim().replaceAll(" +", " ").split(" ");
         for(String s : splitArray){
-            if(!UselessWord.getUselessWords().contains(s.toLowerCase())){
-                if(!s.equals(" ") && !s.equals("\t")) {
-                    wordArray.addToWordArray(s);
-                }
+            if(!s.equals(" ") && !s.equals("\t")) {
+                wordArray.addToWordArray(s);
             }
         }
         return wordArray;

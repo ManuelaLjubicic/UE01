@@ -14,7 +14,7 @@ import java.util.LinkedList;
 /**
  * Created by manue on 02.11.2015.
  */
-public class CreateIndexFilter extends AbstractFilter<LineWithLineNumber, LinkedList<String>> {
+public class CreateIndexFilter extends AbstractFilter<LinkedList<LineWithLineNumber>, LinkedList<String>> {
 
     private LinkedList<String> _indexList = new LinkedList<>();
 
@@ -22,20 +22,30 @@ public class CreateIndexFilter extends AbstractFilter<LineWithLineNumber, Linked
         super(output);
     }
 
-    public CreateIndexFilter(IPullPipe<LineWithLineNumber> input) throws InvalidParameterException {
+    public CreateIndexFilter(IPullPipe<LinkedList<LineWithLineNumber>> input) throws InvalidParameterException {
         super(input);
     }
 
     @Override
     public LinkedList<String> read() throws StreamCorruptedException {
 
-        LineWithLineNumber lineNumber = readInput();
+        boolean endSignalReached = false;
+        LinkedList<LineWithLineNumber> lines = readInput();
 
-        while(!lineNumber.isEndOfSignal()){
-             createIndex(lineNumber);
-             lineNumber = readInput();
+        while(!endSignalReached) {
+            for (LineWithLineNumber l : lines) {
+                if(l.isEndOfSignal()) {
+                    endSignalReached = true;
+                    createIndex(l);
+                    break;
+                }
+
+                createIndex(l);
+            }
+
+            lines = readInput();
         }
-        createIndex(lineNumber);
+
         return _indexList;
 
     }
@@ -46,10 +56,12 @@ public class CreateIndexFilter extends AbstractFilter<LineWithLineNumber, Linked
     }
 
     @Override
-    public void write(LineWithLineNumber value) throws StreamCorruptedException {
+    public void write(LinkedList<LineWithLineNumber> value) throws StreamCorruptedException {
 
-        if(createIndex(value)){
-            writeOutput(_indexList);
+        for(LineWithLineNumber l : value) {
+            if (createIndex(l)) {
+                writeOutput(_indexList);
+            }
         }
     }
 

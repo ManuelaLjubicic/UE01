@@ -25,7 +25,6 @@ public class Main {
 
     public static void main(String[] args) {
 
-
         if(args[0].equals("pushA") || (args[0].equals("pullA"))){
             if(args.length == 3){
                 inputPath = "\\" + args[1];
@@ -79,7 +78,7 @@ public class Main {
         PullPipe<LinkedList<String>> pipe1 = new PullPipe<>();
         PrintSink filter1 = new PrintSink(pipe1, outputPath);
 
-        PullPipe<LineWithLineNumber> pipe2 = new PullPipe<>();
+        PullPipe<LinkedList<LineWithLineNumber>> pipe2 = new PullPipe<>();
         CreateIndexFilter filter2 = new CreateIndexFilter(pipe2);
 
         PullPipe<WordArray> pipe3 = new PullPipe<>();
@@ -111,7 +110,7 @@ public class Main {
         PushPipe<WordArray> pipe2 = new PushPipe<>();
         LineToWordFilter filter2 = new LineToWordFilter(pipe2);
 
-        PushPipe<LineWithLineNumber> pipe3 = new PushPipe<>();
+        PushPipe<LinkedList<LineWithLineNumber>> pipe3 = new PushPipe<>();
         ShiftFilter filter3 = new ShiftFilter(pipe3);
 
         PushPipe<LinkedList<String>> pipe4 = new PushPipe<>();
@@ -195,7 +194,7 @@ public class Main {
         PullPipe<LinkedList<String>> pipe1 = new PullPipe<>();
         PrintSink filter1 = new PrintSink(pipe1, outputPath);
 
-        PullPipe<LineWithLineNumber> pipe2 = new PullPipe<>();
+        PullPipe<LinkedList<LineWithLineNumber>> pipe2 = new PullPipe<>();
         CreateIndexFilter filter2 = new CreateIndexFilter(pipe2);
 
         PullPipe<WordArray> pipe3 = new PullPipe<>();
@@ -241,7 +240,7 @@ public class Main {
         PushPipe<WordArray> pipe4 = new PushPipe<>();
         LineToWordFilter filter4 = new LineToWordFilter(pipe4);
 
-        PushPipe<LineWithLineNumber> pipe5 = new PushPipe<>();
+        PushPipe<LinkedList<LineWithLineNumber>> pipe5 = new PushPipe<>();
         ShiftFilter filter5 = new ShiftFilter(pipe5);
 
         PushPipe<LinkedList<String>> pipe6 = new PushPipe<>();
