@@ -264,7 +264,3 @@ public class Main {
     }
 }
 
-
-//TODO unwichtige Wörter aussortieren (HashMap?)
-//TODO im LineToWordFilter die Satzzeichen (Sonderzeichen) entfernen
-//TODO sysouts nervige kommentare und unnötige packete und klassen raus schmeißen
