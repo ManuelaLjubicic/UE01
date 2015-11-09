@@ -30,20 +30,18 @@ public class CreateIndexFilter extends AbstractFilter<LinkedList<LineWithLineNum
     public LinkedList<String> read() throws StreamCorruptedException {
 
         boolean endSignalReached = false;
-        LinkedList<LineWithLineNumber> lines = readInput();
+        LinkedList<LineWithLineNumber> lines;
 
         while(!endSignalReached) {
+            lines = readInput();
             for (LineWithLineNumber l : lines) {
                 if(l.isEndOfSignal()) {
                     endSignalReached = true;
                     createIndex(l);
                     break;
                 }
-
                 createIndex(l);
             }
-
-            lines = readInput();
         }
 
         return _indexList;

@@ -30,7 +30,13 @@ public class CharacterSource extends AbstractFilter<String, CharTransfer> {
 
     @Override
     public CharTransfer read() throws StreamCorruptedException {
-        return _chars.remove(0);
+        CharTransfer c = null;
+        try {
+            c = _chars.remove(0);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return c;
     }
 
     @Override
